@@ -1,6 +1,7 @@
 library(academictwitteR) # see: https://github.com/cjbarrie/academictwitteR
 library(readr)
 library(dplyr)
+library(tidylog)
 options(scipen = 999)
 
 #get dates of account suspensions
@@ -10,13 +11,16 @@ suspdates <- read_csv("data/raw/tracked-suspensions.csv")
 suspended_followers_all <-
   readRDS("data/output/suspended_followers_all.rds")
 
-# suspended_followers_all <- suspended_followers_all[510:1730]
+#TODO filter list by only popular accounts
+
+
+
 
 for (i in seq_along(suspended_followers_all)) {
   #get suspended account ID for file naming
   suspended_account = colnames(suspended_followers_all[[i]])
   #make data path for saving
-  data_path_for_follower_tweets = paste0("data/tweetdata/", suspended_account)
+  data_path_for_follower_tweets = paste0("data/tweetdata_popular/", suspended_account)
   #get date-time of suspension
   suspdatetime = suspdates[suspdates$`Twitter ID` == suspended_account, 4]
   suspdate = as.Date(suspdatetime$`Suspension detected`)
@@ -33,13 +37,7 @@ for (i in seq_along(suspended_followers_all)) {
   #sample followers
   set.seed(123L)
   
-  followers_size <- length(followers)
-  
-  if (followers_size >= 100) {
-    followers_sample <- sample(followers, 100, replace = F)
-  } else {
-    followers_sample <- followers
-  }
+  followers_sample <- sample(followers, 1000, replace = F)
   
   #get tweets of followers
   for (j in seq_along(followers_sample)) {

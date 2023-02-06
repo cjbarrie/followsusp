@@ -21,10 +21,3 @@ for(i in seq_along(fls)) {
 }
 
 saveRDS(suspended_followers_all, "data/output/suspended_followers_all.rds")
-
-# TODO
-# check accounts against alt-right lists or similar to select
-# take a sample of 100-1000 followers for each account
-# collect tweets of followers for 60 days before and 60 days after suspension
-# measure rate of tweeting
-# measure toxicity of tweets

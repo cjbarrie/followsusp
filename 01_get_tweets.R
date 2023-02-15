@@ -11,6 +11,7 @@ suspended_followers_all <-
   readRDS("data/output/suspended_followers_all.rds")
 
 # suspended_followers_all <- suspended_followers_all[510:1730]
+# suspended_followers_all <- suspended_followers_all[1730:1230]
 
 for (i in seq_along(suspended_followers_all)) {
   #get suspended account ID for file naming

@@ -4,3 +4,5 @@
 .Ruserdata
 data/
 Icon
+.DS_Store
+memos/

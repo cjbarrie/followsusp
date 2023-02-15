@@ -2,6 +2,7 @@ library(academictwitteR) # see: https://github.com/cjbarrie/academictwitteR
 library(readr)
 library(dplyr)
 library(tidylog)
+library(stringr)
 options(scipen = 999)
 
 #get dates of account suspensions
@@ -11,14 +12,47 @@ suspdates <- read_csv("data/raw/tracked-suspensions.csv")
 suspended_followers_all <-
   readRDS("data/output/suspended_followers_all.rds")
 
-#TODO filter list by only popular accounts
+susp_popular <- suspdates %>%
+  filter(Followers>=5000) %>%
+  pull(`Twitter ID`)
 
+# suspnames_all <- as.numeric(c())
+# for (i in seq_along(suspended_followers_all)) {
+#   suspname <- colnames(suspended_followers_all[[i]])
+#   suspnames_all <- as.numeric(c(suspnames_all, suspname))
+# 
+# }
+# 
+# susp_popular[!(susp_popular %in% suspnames_all)]
 
+# suspnames_all <- as.numeric(c())
+# for (i in seq_along(suspended_followers_pop)) {
+#   suspname <- colnames(suspended_followers_pop[[i]])
+#   suspnames_all <- as.numeric(c(suspnames_all, suspname))
+# 
+# }
 
+# susp_populardf <- suspdates %>%
+#   filter(`Twitter ID` %in% suspnames_all)
+
+# some of the accounts listed in suspdates are not actually in the raw data
+#TODO look into why this is
+
+suspended_followers_pop <- list()
 
 for (i in seq_along(suspended_followers_all)) {
+  suspname <- colnames(suspended_followers_all[[i]])
+  if (str_detect(suspname, paste0("\\b", susp_popular, "\\b", collapse = "|"))) {
+    suspended_followers_pop[[i]] <- suspended_followers_all[[i]]
+  }
+}
+
+suspended_followers_pop <- suspended_followers_pop[lengths(suspended_followers_pop) != 0]
+
+
+for (i in seq_along(suspended_followers_pop)) {
   #get suspended account ID for file naming
-  suspended_account = colnames(suspended_followers_all[[i]])
+  suspended_account = colnames(suspended_followers_pop[[i]])
   #make data path for saving
   data_path_for_follower_tweets = paste0("data/tweetdata_popular/", suspended_account)
   #get date-time of suspension
@@ -32,7 +66,7 @@ for (i in seq_along(suspended_followers_all)) {
   suspdateb_tformat = paste0(as.character(suspdateb), "T00:00:00Z")
   suspdatea_tformat = paste0(as.character(suspdatea), "T00:00:00Z")
   #get followers of suspended account
-  followers = suspended_followers_all[[i]][[suspended_account]]
+  followers = suspended_followers_pop[[i]][[suspended_account]]
   
   #sample followers
   set.seed(123L)
@@ -49,7 +83,7 @@ for (i in seq_along(suspended_followers_all)) {
       "for suspended account # ",
       i,
       " of ",
-      length(suspended_followers_all),
+      length(suspended_followers_pop),
       "\n"
     )
     
